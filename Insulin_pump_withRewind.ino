@@ -8,6 +8,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSerif9pt7b.h>
+#include <Fonts/FreeSerifBoldItalic9pt7b.h>
 #include <Fonts/FreeSerif12pt7b.h>
 
 int bluePin = 2;    //IN1 on the ULN2003 Board, BLUE end of the Blue/Yellow motor coil
@@ -20,6 +21,7 @@ int total_dose = 0;   //counts the total dose
 int dose_switch = 9;
 int confirm_switch = 10;
 int confirm = 0;
+int i = 0;
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -131,16 +133,15 @@ void setup() {
   display.setFont(&FreeSerif12pt7b);    
   display.println("PUMP");
   display.display();
-  delay(2000); 
-  
+  delay(2000);  
+}
+
+void loop() {
+
   digitalWrite(bluePin, LOW);
   digitalWrite(pinkPin, LOW);
   digitalWrite(yellowPin, LOW);
   digitalWrite(orangePin, LOW);
-  
-}
-
-void loop() {
 
   display.clearDisplay();  
   display.setFont();
@@ -148,7 +149,6 @@ void loop() {
   display.setTextColor(WHITE);
   display.setCursor(20,5);
   display.println("NEA ENGINEERING");
-  //display.display();    
   display.setCursor(12,26);
   display.setFont(&FreeSerif12pt7b);    
   display.println("SET DOSE");
@@ -156,9 +156,26 @@ void loop() {
   display.setFont(&FreeSerif12pt7b);    
   display.println(dose);
   display.display();
-
+  
+  i = 2;
+  
   while (digitalRead(confirm_switch) == HIGH && digitalRead(dose_switch) == HIGH){
-   dose = 0;
+   //set display
+    if (i != 0){
+    display.clearDisplay();  
+    display.setFont();
+    display.setTextSize(1);             
+    display.setTextColor(WHITE);
+    display.setCursor(20,5);
+    display.println("NEA ENGINEERING");
+    display.setCursor(12,38);
+    display.setFont(&FreeSerifBoldItalic9pt7b);    
+    display.println("REWINDING");
+    display.display();
+    i--;
+    }
+
+    //reverse motor
       digitalWrite(bluePin, LOW);
       digitalWrite(pinkPin, LOW);
       digitalWrite(yellowPin, LOW);
@@ -182,6 +199,8 @@ void loop() {
       digitalWrite(yellowPin, LOW);
       digitalWrite(orangePin, LOW);
       delay(5); 
+      
+      dose = 0;
   }
 
   if (digitalRead(confirm_switch) == LOW && digitalRead(dose_switch) == HIGH){
